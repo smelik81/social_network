@@ -1,26 +1,38 @@
-import React, { useState } from 'react';
-import toast from 'react-hot-toast';
-import { BiMailSend } from 'react-icons/bi';
-import styles from './Form.module.css';
+import React, { useState } from 'react'
+import toast from 'react-hot-toast'
+import { BiMailSend } from 'react-icons/bi'
+import styles from './Form.module.css'
+import { useAddCommentMutation } from '../../redux/commentApi'
 
 export const Form = () => {
-  const [author, setAuthor] = useState('');
-  const [content, setContent] = useState('');
+  const [author, setAuthor] = useState('')
+  const [content, setContent] = useState('')
+  const [addComment, { isError, isLoading }] = useAddCommentMutation()
 
   const onHandleChange = (e) => {
-    const { name, value } = e.target;
-    console.log(name, value);
-  };
+    const { name, value } = e.target
+    switch (name) {
+      case 'name':
+        setAuthor(value)
+        break
+      case 'text':
+        setContent(value)
+        break
+      default:
+        break
+    }
+  }
 
   const onHandleSubmit = (e) => {
-    e.preventDefault();
-
-    setAuthor('');
-    setContent('');
-  };
+    e.preventDefault()
+    addComment({ author, content })
+    setAuthor('')
+    setContent('')
+  }
 
   return (
     <div className={styles.formWrapper}>
+      {isError && <p>There is an error. Please try again.</p>}
       <form className={styles.form} onSubmit={onHandleSubmit}>
         <label className={styles.label}>
           <span className={styles.labelName}>Full name</span>
@@ -46,9 +58,9 @@ export const Form = () => {
 
         <button className={styles.formBtn}>
           <BiMailSend className={styles.icon} />
-          Send
+          {isLoading ? 'Sending...' : 'Send'}
         </button>
       </form>
     </div>
-  );
-};
+  )
+}
